@@ -1,10 +1,16 @@
 const express = require('express');
 const { spawn } = require('child_process');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
+const kidneyRouteLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs for this route
+});
+
+router.post('/', kidneyRouteLimiter, (req, res) => {
   // Extract input data from request body
   const inputData = req.body;
   console.log("Data received for kidney route:", inputData);
